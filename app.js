@@ -26,7 +26,7 @@ function formatLog(req, res, body) {
 
 http.createServer(function (req, res) {
   res.on('finish', function () {
-    console.log(formatLog(req, res, res.statusCode === 200 ? addr : ''));
+    console.log(formatLog(req, res, res.statusCode === 200 ? getIp(req) : ''));
   });
 
   if (/(curl|wget)/.test(userAgent = req.headers['user-agent'])) {
