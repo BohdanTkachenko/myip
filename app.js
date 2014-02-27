@@ -1,49 +1,49 @@
 var
-    http = require('http'),
-    bindHost, bindPort;
+  http = require('http'),
+  bindHost, bindPort;
 
 bindHost = process.env.APP_HOST || '127.0.0.1';
 bindPort = process.env.APP_PORT || 1271;
 
- function formatLog (req, res, body) {
-    body = typeof body === 'string' ? body : '';
+function getIp(req) {
+  return req.headers['x-real-ip']
+    || req.headers['x-forwarded-for']
+    || req.connection.remoteAddress;
+}
 
-    var dateTime = /Date: ([A-z0-9:, ]+)/.exec(res._header)[1];
+function formatLog(req, res, body) {
+  body = typeof body === 'string' ? body : '';
 
-    return req.connection.remoteAddress
-        + ' - - [ ' + dateTime + ' ] "'
-        + req.method + ' '
-        + req.url + ' HTTP/' + req.httpVersionMajor + '.' + req.httpVersionMinor + '" '
-        + res.statusCode + ' '
-        + (res._header.length + body.length);
+  var dateTime = /Date: ([A-z0-9:, ]+)/.exec(res._header)[1];
+
+  return getIp(req)
+    + ' - - [ ' + dateTime + ' ] "'
+    + req.method + ' '
+    + req.url + ' HTTP/' + req.httpVersionMajor + '.' + req.httpVersionMinor + '" '
+    + res.statusCode + ' '
+    + (res._header.length + body.length);
 }
 
 http.createServer(function (req, res) {
-    var
-        userAgent = req.headers['user-agent'],
-        addr = req.connection.remoteAddress;
+  res.on('finish', function () {
+    console.log(formatLog(req, res, res.statusCode === 200 ? addr : ''));
+  });
 
-    res.on('finish', function () {
-        console.log(formatLog(req, res, res.statusCode === 200 ? addr : ''));
-    });
+  if (/(curl|wget)/.test(userAgent = req.headers['user-agent'])) {
+    res.setHeader('Content-Type', 'text/plain');
+  } else {
+    res.setHeader('Content-Type', 'text/html');
+  }
 
-    if (/(curl|wget)/.test(userAgent)) {
-        res.setHeader('Content-Type', 'text/plain');
-    } else {
-        res.setHeader('Content-Type', 'text/html');
-    }
+  if (req.url !== '/') {
+    res.writeHead(404, 'Not Found');
 
-    if (req.url !== '/') {
-        res.writeHead(404, 'Not Found');
+    return res.end();
+  } else {
+    res.writeHead(200);
+  }
 
-        return res.end();
-    } else {
-        res.writeHead(200);
-    }
-
-    //console.log(res);
-
-    return res.end(addr);
+  return res.end(getIp(req));
 }).listen(bindPort, bindHost);
 
 console.log('Server running at http://' + bindHost + ':' + bindPort + '/');
