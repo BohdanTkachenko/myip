@@ -1,0 +1,25 @@
+{
+  "name": "myip",
+  "version": "0.0.0",
+  "description": "Simple web server that returns client IP address on request",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bogus-weber/myip.git"
+  },
+  "keywords": [
+    "ip",
+    "web",
+    "server"
+  ],
+  "author": "Bogdan Tkachenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bogus-weber/myip/issues"
+  },
+  "homepage": "https://github.com/bogus-weber/myip"
+}
