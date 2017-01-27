@@ -1,6 +1,8 @@
 myIP
 ====
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/BohdanTkachenko/myip.svg)](https://greenkeeper.io/)
+
 Simple NodeJS web server that returns client IP address on request
 
 Usage
